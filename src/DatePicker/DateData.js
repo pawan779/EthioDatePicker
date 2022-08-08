@@ -61,6 +61,57 @@ export const months = [
   },
 ];
 
+export const enMonth = [
+  {
+    en: "Jan",
+    value: 1,
+  },
+  {
+    en: "Feb",
+    value: 2,
+  },
+  {
+    en: "Mar",
+    value: 3,
+  },
+  {
+    en: "Apr",
+    value: 4,
+  },
+  {
+    en: "May",
+    value: 5,
+  },
+  {
+    en: "Jun",
+    value: 6,
+  },
+  {
+    en: "Jul",
+    value: 7,
+  },
+  {
+    en: "Aug",
+    value: 8,
+  },
+  {
+    en: "Sept",
+    value: 9,
+  },
+  {
+    en: "Oct",
+    value: 10,
+  },
+  {
+    en: "Nov",
+    value: 11,
+  },
+  {
+    en: "Dec",
+    value: 12,
+  },
+];
+
 // export const year = [
 //   2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025, 2026,
 //   2027, 2028, 2029, 2030,

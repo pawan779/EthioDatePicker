@@ -8,7 +8,7 @@ function DatePicker() {
     date: { am: {}, en: {} },
   });
   const [showDatePicker, setShowDatePicker] = useState(false);
-  // console.log("dat123", date);
+
   return (
     <div>
       <input
@@ -18,7 +18,20 @@ function DatePicker() {
         }
         onClick={() => setShowDatePicker(!showDatePicker)}
       />
-      {showDatePicker && <Picker onChangeDate={setDate} value={date} />}
+      <input
+        type="text"
+        value={
+          !_.isEmpty(date?.formatted.en) ? date?.formatted.en : "YYYY-MM-DD"
+        }
+        onClick={() => setShowDatePicker(!showDatePicker)}
+      />
+      {showDatePicker && (
+        <Picker
+          onChangeDate={setDate}
+          date={!_.isEmpty(date.formatted.en) ? date.formatted.en : ""}
+          isEthiopoianData={false}
+        />
+      )}
     </div>
   );
 }

@@ -3,9 +3,13 @@ import React, { useEffect, useState } from "react";
 import moment from "moment";
 import { toEthiopianDateString, convertToGC } from "gc-to-ethiopian-calendar";
 import _ from "lodash";
-import { intitalDay, months, weeks, year } from "./DateData";
+import { enMonth, intitalDay, months, weeks, year } from "./DateData";
 
-const Picker = ({ value = "", onChangeDate = () => {} }) => {
+const Picker = ({
+  date = "",
+  onChangeDate = () => {},
+  isEthiopoianData = false,
+}) => {
   const [days, setDays] = useState(intitalDay);
   const [isChanged, setIsChanged] = React.useState(false);
   const [currentYear, setCurrentYear] = React.useState(2014);
@@ -26,7 +30,11 @@ const Picker = ({ value = "", onChangeDate = () => {} }) => {
 
   const converToGeorgian = (day) => {
     if (_.isNumber(day)) {
-      const gcDate = convertToGC(day, currentMonth, currentYear);
+      const gcDate = convertToGC(
+        parseInt(day),
+        parseInt(currentMonth),
+        parseInt(currentYear)
+      );
       const split = gcDate.split(" ");
       return parseFloat(split[1]).toFixed(0);
     } else {
@@ -80,7 +88,6 @@ const Picker = ({ value = "", onChangeDate = () => {} }) => {
   const getTodayDate = () => {
     const dateNow = toEthiopianDateString();
     const split = dateNow.split(" ");
-    console.log(dateNow);
 
     const findMonth = months.find((a) => a.am == split[2]);
 
@@ -90,11 +97,11 @@ const Picker = ({ value = "", onChangeDate = () => {} }) => {
       month: findMonth.value,
       year: split[3],
     });
-    _.isEmpty(value?.date?.am) && handleChangeDate(findMonth.value, split[3]);
+    _.isEmpty(date) && handleChangeDate(findMonth.value, split[3]);
   };
 
   const handleChangeDate = (month, year) => {
-    const gcDate = convertToGC(1, month, year);
+    const gcDate = convertToGC(1, parseInt(month), parseInt(year));
     const week = gcDate.split(", ");
     setEnYear(gcDate.split(" ")[3]);
 
@@ -106,8 +113,6 @@ const Picker = ({ value = "", onChangeDate = () => {} }) => {
         am: "",
         en: "",
         value: "",
-        isSlected: false,
-        isCurrent: false,
       });
     }
     setDays(newDay);
@@ -118,11 +123,63 @@ const Picker = ({ value = "", onChangeDate = () => {} }) => {
     setIsLeapYear(findLeapYear(parseInt(year) + 1));
   };
 
+  const findEthioDate = (val) => {
+    const date = toEthiopianDateString(val);
+    const split = date.split(" ");
+
+    const findMonth = months.find((a) => a.am == split[2]);
+
+    const split1 = val.split("-");
+
+    handleChangeDate(findMonth.value, split[3]);
+    setSelectedDate({
+      am: {
+        day: split[1],
+        month: findMonth.value,
+        year: split[3],
+      },
+      en: {
+        day: split1[2],
+        month: split1[1],
+        year: split1[0],
+      },
+    });
+  };
+
+  const findGeorgianDate = (val) => {
+    const split1 = val.split("-");
+    const date = convertToGC(
+      parseInt(split1[2]),
+      parseInt(split1[1]),
+      parseInt(split1[0])
+    );
+    const split = date.split(" ");
+    const findMonth = enMonth.find((a) => a.en == split[2]);
+    handleChangeDate(split1[1], split1[0]);
+    setSelectedDate({
+      am: {
+        day: split1[2],
+        month: split1[1],
+        year: split1[0],
+      },
+      en: {
+        day: split[1],
+        month: findMonth.value,
+        year: split[3],
+      },
+    });
+  };
+
+  //to show the input date
+  const handleInputDate = () => {
+    let inputDate = moment(date).format("YYYY-MM-DD");
+    //check the input date is ethiopian or georgian
+    !isEthiopoianData ? findEthioDate(inputDate) : findGeorgianDate(inputDate);
+  };
+
   useEffect(() => {
     getTodayDate();
-    !_.isEmpty(value?.date?.am) &&
-      handleChangeDate(value.date.am.month, value.date.am.year);
-    !_.isEmpty(value?.date?.am) && setSelectedDate(value.date);
+    !_.isEmpty(date) && handleInputDate();
   }, []);
 
   useEffect(() => {
@@ -131,8 +188,6 @@ const Picker = ({ value = "", onChangeDate = () => {} }) => {
     }
     setIsChanged(false);
   }, [isChanged]);
-
-  console.log("currenMonth", currentMonth);
 
   return (
     <div className="container">
@@ -185,7 +240,7 @@ const Picker = ({ value = "", onChangeDate = () => {} }) => {
           <span className="enDate">{months[currentMonth - 1].en}</span>
           <span className="enDate">
             {months[currentMonth - 1].en == "Dec/Jan"
-              ? `${enYear}/${enYear + 1}`
+              ? `${enYear}/${parseInt(enYear) + 1}`
               : enYear}
           </span>
         </div>
